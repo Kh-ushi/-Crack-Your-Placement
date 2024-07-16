@@ -1,0 +1,220 @@
+// 287. Find the Duplicate Number
+
+class Solution {
+    public int findDuplicate(int[] nums) {
+        
+    int slow=nums[0];
+    int fast=nums[nums[0]];
+
+    while(slow!=fast){
+        slow=nums[slow];
+        fast=nums[nums[fast]];
+    }
+
+    slow=0;
+
+    while(slow!=fast){
+        slow=nums[slow];
+        fast=nums[fast];
+    }
+
+    return slow;
+
+    
+
+
+}}
+
+
+// 75. Sort Colors
+class Solution {
+    public void sortColors(int[] nums) {
+        
+        int l=0;
+        int r=nums.length-1;
+        int i=0;
+
+        while(i<=r){
+
+        if(nums[i]==0){
+            swap(nums,i++,l++);
+        }
+        else if(nums[i]==1){
+            i++;
+        }
+        else{
+             swap(nums,i,r--);
+        }
+  
+
+        }
+        
+    }
+
+
+    public void swap(int nums[],int start,int end){
+        int temp=nums[start];
+        nums[start]=nums[end];
+        nums[end]=temp;
+
+    }
+
+}
+
+// 26. Remove Duplicates From Sorted Array
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        if (nums.length == 0) return 0;
+
+        int l = 0;
+
+        for (int r = 1; r < nums.length; r++) {
+            if (nums[r] != nums[l]) {
+                l++;
+                nums[l] = nums[r];
+            }
+        }
+
+        return l + 1;
+    }
+}
+
+// 283. Move Zeroes
+class Solution {
+    public void moveZeroes(int[] nums) {
+
+        int idx=-1;
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]==0){
+                idx=i;
+                break;
+            }
+        }
+
+       if(idx!=-1){
+         int l=idx;
+        for(int r=idx+1;r<nums.length;r++){
+            if(nums[r]!=0){
+                int temp=nums[l];
+                nums[l]=nums[r];
+                nums[r]=temp;
+                l++;
+            }
+        }
+       }
+        
+    }
+}
+
+// 121. Best Time to Buy and Sell Stock
+class Solution {
+    public int maxProfit(int[] prices) {
+
+        int bp=prices[0];
+        int maxProfit=0;
+        for(int i=1;i<prices.length;i++){
+            if(prices[i]<bp){
+                bp=prices[i];
+            }
+            else{
+                maxProfit=Math.max(maxProfit,prices[i]-bp);
+            }
+        }
+
+        return maxProfit;
+
+        
+    }
+}
+
+// 1. Two Sum
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+
+        int arr[][]=new int[nums.length][2];
+        for(int i=0;i<nums.length;i++){
+            arr[i][0]=i;
+            arr[i][1]=nums[i];
+        }
+        Arrays.sort(arr, (a, b) -> Integer.compare(a[1], b[1]));
+
+        int l=0;
+        int r=nums.length-1;
+        int ans[]=new int[2];
+        while(l<r){
+         
+         if(arr[l][1]+arr[r][1]==target){
+            ans[0]=arr[l][0];
+            ans[1]=arr[r][0];
+            break;
+         }
+         else if(arr[l][1]+arr[r][1]<target){
+            l++;
+         }
+         else{
+            r--;
+         }
+
+        }
+
+        return ans;
+    }
+}
+
+// 122. Best Time to Buy and Sell Stock II
+import java.util.HashMap;
+
+class Solution {
+
+    private HashMap<String, Integer> memo = new HashMap<>();
+
+    public int solve(int[] prices, int idx, boolean buy) {
+        if (idx == prices.length) {
+            return 0;
+        }
+
+        String key = idx + "-" + buy;
+        if (memo.containsKey(key)) {
+            return memo.get(key);
+        }
+
+        int maxProfit;
+        if (buy) {
+            maxProfit = Math.max(-prices[idx] + solve(prices, idx + 1, false), solve(prices, idx + 1, true));
+        } else {
+            maxProfit = Math.max(prices[idx] + solve(prices, idx + 1, true), solve(prices, idx + 1, false));
+        }
+
+        memo.put(key, maxProfit);
+        return maxProfit;
+    }
+
+    public int maxProfit(int[] prices) {
+        return solve(prices, 0, true);
+    }
+}
+
+// 974. Subarray Sums Divisible by K
+import java.util.HashMap;
+
+class Solution {
+    public int subarraysDivByK(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+
+        int sum = 0;
+        int result = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            int rem = (sum % k + k) % k; // Handle negative remainders
+
+            if (map.containsKey(rem)) {
+                result += map.get(rem);
+            }
+            map.put(rem, map.getOrDefault(rem, 0) + 1);
+        }
+
+        return result;
+    }
+}
+
