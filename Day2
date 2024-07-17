@@ -340,3 +340,70 @@ class Solution {
 
     }
 }
+
+
+//493. Reverse Pairs
+ 
+
+class Solution {
+
+    public int finalAns = 0;
+    
+    public int count(int num1[], int si1, int ei1, int si2, int ei2) {
+        int ans = 0;
+        int i = si1;
+        int j = si2;
+        while (i <= ei1 && j <= ei2) {
+            if ((long)num1[i] > 2 * (long)num1[j]) {
+                ans += (ei1 - i + 1);
+                j++;
+            } else {
+                i++;
+            }
+        }
+        return ans;
+    }
+
+    public void mergeSort(int nums[], int si, int ei) {
+        if (si >= ei) {
+            return;
+        }
+        int mid = si + (ei - si) / 2;
+        mergeSort(nums, si, mid);
+        mergeSort(nums, mid + 1, ei);
+        finalAns += count(nums, si, mid, mid + 1, ei);
+        merge(nums, si, mid, ei);
+    }
+
+    public void merge(int nums[], int si, int mid, int ei) {
+        int temp[] = new int[ei - si + 1];
+        int i = si;
+        int j = mid + 1;
+        int k = 0;
+
+        while (i <= mid && j <= ei) {
+            if (nums[i] < nums[j]) {
+                temp[k++] = nums[i++];
+            } else {
+                temp[k++] = nums[j++];
+            }
+        }
+
+        while (i <= mid) {
+            temp[k++] = nums[i++];
+        }
+
+        while (j <= ei) {
+            temp[k++] = nums[j++];
+        }
+
+        for (k = 0, i = si; k < temp.length; k++, i++) {
+            nums[i] = temp[k];
+        }
+    }
+
+    public int reversePairs(int[] nums) {
+        mergeSort(nums, 0, nums.length - 1);
+        return finalAns;
+    }
+    }
