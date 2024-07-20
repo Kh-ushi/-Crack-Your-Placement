@@ -1,0 +1,152 @@
+// 300. Longest Increasing Subsequence
+
+
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int size = 0;
+        int ans[] = new int[nums.length];
+
+        for (int i = 0; i < nums.length; i++) {
+            int left = 0;
+            int right = size;
+
+            while (left < right) {
+
+                int mid = left + (right - left) / 2;
+                if(nums[mid]<nums[i]){
+                    left=mid+1;
+                }
+                else{
+                    right=mid;
+                }
+
+            }
+            ans[left] = nums[i];
+            if (left == right) {
+                size++;
+            }
+
+        }
+
+        return size;
+
+    }
+}
+
+
+// 221. Maximal Square
+class Solution {
+    public int maximalSquare(char[][] matrix) {
+
+      if(matrix.length==0){
+        return 0;
+      }
+
+        int dp[][] = new int[matrix.length][matrix[0].length];
+        int ans = 0;
+
+        for (int i = 0; i < dp.length; i++) {
+            dp[i][0] = Character.getNumericValue(matrix[i][0]);
+            ans = Math.max(ans, dp[i][0]);
+        }
+
+        for (int j = 1; j < dp[0].length; j++) {
+            dp[0][j] = Character.getNumericValue(matrix[0][j]);
+            ans = Math.max(ans, dp[0][j]);
+        }
+
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[0].length; j++) {
+                   
+               if(matrix[i][j]=='1'){
+               dp[i][j]=Math.min(dp[i-1][j],Math.min(dp[i][j-1],dp[i-1][j-1]))+1;
+               ans=Math.max(ans,dp[i][j]);
+
+               }
+
+            }
+        }
+
+        return ans*ans;
+    }
+}
+
+// 403. Frog Jump
+
+
+
+class Solution {
+
+    public boolean solve(int stones[], int pj, int cs, int dp[][]) {
+        if (cs == stones.length - 1) {
+            return true;
+        }
+
+        if (dp[pj][cs] != -1) {
+            return dp[pj][cs] == 1;
+        }
+
+        for (int i = cs + 1; i < stones.length; i++) {
+            int gap = stones[i] - stones[cs];
+            if (gap >= pj - 1 && gap <= pj + 1) {
+                if (solve(stones, gap, i, dp)) {
+                    dp[pj][cs] = 1;
+                    return true;
+                }
+            } else if (gap > pj + 1) {
+                break; 
+            }
+        }
+
+        dp[pj][cs] = 0;
+        return false;
+    }
+
+    public boolean canCross(int[] stones) {
+        int n = stones.length;
+        int dp[][] = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return solve(stones, 0, 0, dp);
+    }
+}
+
+// 740. Delete and Earn
+class Solution {
+    public int deleteAndEarn(int[] nums) {
+        if (nums.length == 0) return 0;
+
+        int largest = Integer.MIN_VALUE;
+        for (int num : nums) {
+            largest = Math.max(num, largest);
+        }
+
+       
+        int[] freq = new int[largest + 1];
+        for (int num : nums) {
+            freq[num]++;
+        }
+
+        
+        int[] dp = new int[freq.length];
+        dp[0] = 0;
+        dp[1] = freq[1] * 1;  
+
+       
+        for (int i = 2; i < freq.length; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + freq[i] * i);
+        }
+
+        
+        return dp[dp.length - 1];
+    }
+}
