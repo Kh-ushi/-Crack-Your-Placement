@@ -47,3 +47,46 @@ class Solution {
         return true;
     }
 }
+
+
+
+// 628. Maximum Product of Three Numbers
+
+
+class Solution {
+    public int maximumProduct(int[] nums) {
+        Arrays.sort(nums);
+        
+       
+        int option1 = nums[nums.length - 1] * nums[nums.length - 2] * nums[nums.length - 3];
+        
+       
+        int option2 = nums[0] * nums[1] * nums[nums.length - 1];
+        
+        
+        return Math.max(option1, option2);
+    }
+}
+
+
+// 49. Group Anagrams
+
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+        
+        for (String str : strs) {
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String sortedStr = new String(chars);
+            
+            if (!map.containsKey(sortedStr)) {
+                map.put(sortedStr, new ArrayList<>());
+            }
+            map.get(sortedStr).add(str);
+        }
+        
+        return new ArrayList<>(map.values());
+    }
+}
