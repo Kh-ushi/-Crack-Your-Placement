@@ -1,0 +1,252 @@
+// Undirected Graph Cycle
+
+
+class Solution {
+    
+    public boolean solve(ArrayList<ArrayList<Integer>>adj,boolean vis[],int curr,int par){
+        
+        vis[curr]=true;
+        
+        for(int i=0;i<adj.get(curr).size();i++){
+            
+            int edg=adj.get(curr).get(i);
+            
+            if(vis[edg] && edg!=par){
+                return true;
+            }
+            
+            if(!vis[edg] && solve(adj,vis,edg,curr)){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    // Function to detect cycle in an undirected graph.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        boolean vis[]=new boolean[V];
+        for(int i=0;i<adj.size();i++){
+            if(!vis[i]){
+             
+             if(solve(adj,vis,i,-1)){
+                 return true;
+             }
+            
+            }
+        }
+        
+        return false;
+    }
+}
+
+
+
+// Directed Graph Cycle
+
+
+
+class Solution {
+    
+    public boolean solve(ArrayList<ArrayList<Integer>>adj,int curr,boolean vis[],boolean stack[]){
+        
+        vis[curr]=true;
+        stack[curr]=true;
+        
+        for(int i=0;i<adj.get(curr).size();i++){
+            
+            int edg=adj.get(curr).get(i);
+            
+            if(stack[edg]){
+                
+                return true;
+                
+            }
+            
+            else if(!vis[edg]){
+                
+                if(solve(adj,edg,vis,stack)){
+                    
+                    return true;
+                }
+            }
+        }
+        
+        stack[curr]=false;
+        
+        return false;
+    }
+   
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        
+        
+        // code here
+        boolean vis[]=new boolean[V];
+        boolean stack[]=new boolean[V];
+        
+        for(int i=0;i<adj.size();i++){
+            
+            if(solve(adj,0,vis,stack)){
+                return true;
+            }
+            
+        }
+        return false;
+        
+    }
+}
+
+
+// Topological sort
+
+class Solution
+{
+    
+    static void solve(ArrayList<ArrayList<Integer>>adj,int curr,boolean vis[],Stack<Integer>s){
+        
+        vis[curr]=true;
+        
+        for(int i=0;i<adj.get(curr).size();i++){
+            
+            int edg=adj.get(curr).get(i);
+            
+            if(!vis[edg]) {
+                solve(adj, edg, vis, s);
+            }
+        }
+        
+        s.push(curr);
+        
+    }
+    
+    //Function to return list containing vertices in Topological order. 
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) 
+    {
+        // add your code here
+        
+        Stack<Integer>s=new Stack<>();
+        boolean vis[]=new boolean[V];
+        
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+                solve(adj,i,vis,s);
+            }
+        }
+        
+        
+        int ans[]=new int[V];
+        int idx=0;
+        while(!s.isEmpty()){
+            ans[idx++]=s.pop();
+            
+        }
+        
+        return ans;
+        
+    }
+}
+
+
+
+// Bipartite Graph
+
+class Solution {
+    
+    public boolean solve(ArrayList<ArrayList<Integer>> adj, int curr, int color[]) {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(curr);
+        color[curr] = 0; // Start coloring the first node with color 0
+        
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            
+            for (int neighbor : adj.get(node)) {
+                if (color[neighbor] == -1) {
+                    // Assign opposite color to the adjacent node
+                    color[neighbor] = 1 - color[node];
+                    q.add(neighbor);
+                } else if (color[neighbor] == color[node]) {
+                    // If adjacent node has the same color, then it's not bipartite
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>> adj) {
+        int color[] = new int[V];
+        Arrays.fill(color, -1); // Initialize all nodes with no color (-1)
+        
+        for (int i = 0; i < V; i++) {
+            if (color[i] == -1) {
+                if (!solve(adj, i, color)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+
+
+// Detect a negative cycle in a Graph | (Bellman Ford)
+
+public static boolean detectNegativeCycle(ArrayList<Edge>graph[],int src,int V){
+    
+    int dist[]=new int[graph.length];
+    for(int i=0;i<graph.length;i++){
+        if(i!=src){
+            dist[i]=Integer.MAX_VALUE;
+        }
+    }
+
+    for(int k=0;k<V-1;k++){
+        for(int i=0;i<graph.length;i++){
+            for(int j=0;j<graph[i].size();j++){
+            
+                Edge e=graph[j].get(j);
+
+                int u=e.src;
+                int v=e.dest;
+                int w=e.wt;
+
+                if(dist[u]!=Integer.MAX_VALUE && dist[u]+w<dist[v]){
+                    dist[v]=w+dist[u];
+                }
+
+            }
+        }
+    }
+
+
+    for(int i=0;i<graph.length;i++){
+        for(int j=0;j<graph[i].size();j++){
+        
+            Edge e=graph[j].get(j);
+
+            int u=e.src;
+            int v=e.dest;
+            int w=e.wt;
+
+            if(dist[u]!=Integer.MAX_VALUE && dist[u]+w<dist[v]){
+                dist[v]=w+dist[u];
+               return true;
+
+            }
+
+        }
+    }
+
+    return false;
+
+
+
+
+}
+
+
