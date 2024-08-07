@@ -1,0 +1,160 @@
+// 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance
+
+
+class Solution {
+
+    public class Edge {
+        int src;
+        int dest;
+        int wt;
+
+        public Edge(int src, int dest, int wt) {
+            this.src = src;
+            this.dest = dest;
+            this.wt = wt;
+        }
+    }
+
+    public void createGraph(ArrayList<Edge>[] graph, int[][] edges) {
+        for (int i = 0; i < graph.length; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int w = edges[i][2];
+
+            graph[u].add(new Edge(u, v, w));
+            graph[v].add(new Edge(v, u, w));
+        }
+    }
+
+    public class Pair implements Comparable<Pair> {
+        int val;
+        int dist;
+
+        public Pair(int val, int dist) {
+            this.val = val;
+            this.dist = dist;
+        }
+
+        @Override
+        public int compareTo(Pair p2) {
+            return this.dist - p2.dist;
+        }
+    }
+
+    public int dijkstras(ArrayList<Edge>[] graph, int distanceThreshold, int src) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        boolean[] vis = new boolean[graph.length];
+        int[] dist = new int[graph.length];
+        int count = -1;
+
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+        pq.add(new Pair(src, 0));
+
+        while (!pq.isEmpty()) {
+            Pair curr = pq.poll();
+            if (vis[curr.val] || dist[curr.val] > distanceThreshold) {
+                continue;
+            }
+            vis[curr.val] = true;
+            count++;
+
+            for (Edge e : graph[curr.val]) {
+                int u = e.src;
+                int v = e.dest;
+                int w = e.wt;
+
+                if (dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                    pq.add(new Pair(v, dist[v]));
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        ArrayList<Edge>[] graph = new ArrayList[n];
+        createGraph(graph, edges);
+
+        int minCount = Integer.MAX_VALUE;
+        int node = -1;
+
+        for (int i = 0; i < n; i++) {
+            int count = dijkstras(graph, distanceThreshold, i);
+            if (count <= minCount) {
+                minCount = count;
+                node = i;
+            }
+        }
+
+        return node;
+    }
+}
+
+
+
+// 329. Longest Increasing Path in a Matrix
+
+
+class Solution {
+    private static final int[][] moves = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+
+    public class Pair implements Comparable<Pair> {
+        int x;
+        int y;
+        int val;
+
+        public Pair(int x, int y, int val) {
+            this.x = x;
+            this.y = y;
+            this.val = val;
+        }
+
+        @Override
+        public int compareTo(Pair p2) {
+            return this.val - p2.val;
+        }
+    }
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        int[][] arr = new int[matrix.length][matrix[0].length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                pq.add(new Pair(i, j, matrix[i][j]));
+                arr[i][j] = 1;
+            }
+        }
+
+        int ans = 1;
+
+        while (!pq.isEmpty()) {
+            Pair curr = pq.poll();
+
+            for (int[] move : moves) {
+                int newRow = curr.x + move[0];
+                int newCol = curr.y + move[1];
+
+                if (newRow >= 0 && newRow < matrix.length && newCol >= 0 && newCol < matrix[0].length) {
+                    if (matrix[newRow][newCol] > matrix[curr.x][curr.y]) {
+                        arr[newRow][newCol] = Math.max(arr[newRow][newCol], arr[curr.x][curr.y] + 1);
+                        ans = Math.max(ans, arr[newRow][newCol]);
+                    }
+                }
+            }
+        }
+
+        return ans;
+    }
+}
