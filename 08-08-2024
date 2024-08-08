@@ -1,0 +1,179 @@
+// 347. Top K Frequent Elements
+
+class Solution {
+    public class Pair implements Comparable<Pair> {
+        int val;
+        int freq;
+
+        public Pair(int val, int freq) {
+            this.val = val;
+            this.freq = freq;
+        }
+
+        @Override
+        public int compareTo(Pair p2) {
+            return this.freq - p2.freq;
+        }
+    }
+
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+
+        Set<Integer> keys = map.keySet();
+        for (int key : keys) {
+            pq.add(new Pair(key, map.get(key)));
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+
+        int[] ans = new int[k];
+        int idx = 0;
+        while (!pq.isEmpty() && idx < k) {
+            ans[idx] = pq.poll().val;
+            idx++;
+        }
+
+        return ans;
+    }
+}
+
+
+
+// 215. Kth Largest Element in an Array
+
+import java.util.PriorityQueue;
+
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            pq.add(nums[i]);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+
+        return pq.poll();
+    }
+}
+
+
+// 264. Ugly Number II
+
+class Solution {
+    public int nthUglyNumber(int n) {
+
+        int ugly[]=new int[n];
+        ugly[0]=1;
+        int idx2=0,idx3=0,idx5=0;
+        for(int i=1;i<n;i++){
+            ugly[i]=Math.min(Math.min(ugly[idx2]*2,ugly[idx3]*3),ugly[idx5]*5);
+            if(ugly[i]==ugly[idx2]*2)idx2++;
+             if(ugly[i]==ugly[idx3]*3)idx3++;
+              if(ugly[i]==ugly[idx5]*5)idx5++;
+
+        }
+
+        return ugly[n-1];
+        
+    }
+}
+
+// 1642. Furthest Building You Can Reach
+
+class Solution {
+    public int furthestBuilding(int[] heights, int bricks, int ladders) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int bricksUsed = 0;
+
+        for (int i = 0; i < heights.length - 1; i++) {
+            int diff = heights[i + 1] - heights[i];
+
+            if (diff > 0) {
+                pq.add(diff);
+
+               
+                if (pq.size() > ladders) {
+                    
+                    bricksUsed += pq.poll();
+                }
+
+            
+                if (bricksUsed > bricks) {
+                    return i;
+                }
+            }
+        }
+
+        return heights.length - 1;
+    }
+}
+
+//767. Reorganize String
+ 
+
+class Solution {
+    public class Pair implements Comparable<Pair> {
+        char ch;
+        int freq;
+
+        public Pair(char ch, int freq) {
+            this.ch = ch;
+            this.freq = freq;
+        }
+
+        @Override
+        public int compareTo(Pair p2) {
+            return p2.freq - this.freq;
+        }
+    }
+
+    public String reorganizeString(String s) {
+
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        Set<Character> keys = map.keySet();
+        for (char key : keys) {
+            pq.add(new Pair(key, map.get(key)));
+        }
+
+        int val = pq.peek().freq;
+
+        if (val > (s.length() + 1) / 2) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder("");
+        Pair prev = null;
+
+        while (!pq.isEmpty()) {
+
+            Pair current = pq.poll();
+            sb.append(current.ch);
+
+            if (prev != null && prev.freq > 0) {
+                pq.add(prev);
+            }
+
+            current.freq--;
+            prev = current;
+
+        }
+
+        return sb.toString();
+
+    }
+}
+
