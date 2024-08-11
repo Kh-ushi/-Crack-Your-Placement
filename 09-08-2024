@@ -1,0 +1,98 @@
+// 1673. Find the Most Competitive Subsequence
+
+class Solution {
+    public int[] mostCompetitive(int[] nums, int k) {
+
+        Stack<Integer>s=new Stack<>();
+
+        for(int i=0;i<nums.length;i++){
+          
+          while(!s.isEmpty() && s.peek()>nums[i] && (nums.length-i+s.size())>k){
+            s.pop();
+          }
+
+          if(s.size()<k){
+            s.push(nums[i]);
+          }
+
+        }
+
+        int ans[]=new int[s.size()];
+        for(int i=ans.length-1;i>=0;i--){
+            ans[i]=s.pop();
+        }
+
+        return ans;
+        
+    }
+}
+
+
+
+// Largest subarray with 0 sum
+
+class GfG
+{
+    int maxLen(int arr[], int n)
+    {
+       HashMap<Integer,Integer>map=new HashMap<>();
+       int sum=0;
+       map.put(0,-1);
+       int ans=0;
+       for(int i=0;i<arr.length;i++){
+           sum+=arr[i];
+           
+           if(map.containsKey(sum)){
+               ans=Math.max(ans,i-map.get(sum));
+           }
+           else{
+               map.put(sum,i);
+           }
+           
+       }
+       
+       return ans;
+    }
+}
+
+
+
+// 973. K Closest Points to Origin
+
+
+class Solution {
+    public class Pair implements Comparable<Pair> {
+     int x;
+     int y;
+     long sum;
+
+    public Pair(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.sum = (long) x * x + (long) y * y;
+    }
+
+    @Override
+    public int compareTo(Pair p2) {
+        return Long.compare(this.sum, p2.sum);
+    }
+}
+
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<Pair>pq=new PriorityQueue<>();
+        
+        for(int i=0;i<points.length;i++){
+            pq.add(new Pair(points[i][0],points[i][1]));
+        }
+
+        int[][] ans=new int[k][2];
+        for(int i=0;i<k;i++){
+            Pair curr=pq.poll();
+            ans[i][0]=curr.x;
+            ans[i][1]=curr.y;
+        }
+
+        return ans; 
+
+    }
+}
