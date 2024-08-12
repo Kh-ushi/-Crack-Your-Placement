@@ -1,0 +1,213 @@
+// 871. Minimum Number of Refueling Stops
+
+class Solution {
+    public int minRefuelStops(int target, int startFuel, int[][] stations) {
+
+
+        PriorityQueue<Integer>pq=new PriorityQueue<>(Collections.reverseOrder());
+        int maxReach=startFuel;
+        int index=0;
+        int count=0;
+
+        while(maxReach<target){
+            
+            while(index<stations.length && stations[index][0]<=maxReach){
+                pq.add(stations[index][1]);
+                 index++;
+            }
+
+            if(pq.isEmpty()){
+                return -1;
+            }
+
+            maxReach+=pq.poll();
+            count++;
+
+
+        }
+        
+        return count;
+    }
+}
+
+
+
+// 857. Minimum Cost to Hire K Workers
+
+class Solution {
+    public double mincostToHireWorkers(int[] quality, int[] wage, int k) {
+        double[][] ratios = new double[quality.length][2];
+        for (int i = 0; i < quality.length; i++) {
+            double ratio = (double) wage[i] / quality[i];
+            ratios[i][0] = ratio;
+            ratios[i][1] = quality[i];
+        }
+
+        Arrays.sort(ratios, (a, b) -> Double.compare(a[0], b[0]));
+
+        int sum = 0;
+        double result = Double.MAX_VALUE;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+
+        for (int i = 0; i < k - 1; i++) {
+            sum += ratios[i][1];
+            pq.add((int) ratios[i][1]);
+        }
+
+        for (int i = k - 1; i < ratios.length; i++) {
+            sum += ratios[i][1];
+            pq.add((int) ratios[i][1]);
+
+            if (pq.size() > k) {
+                sum -= pq.poll();
+            }
+
+            result = Math.min(result, sum * ratios[i][0]);
+        }
+
+        return result;
+    }
+}
+
+// 778. Swim in Rising Water
+
+class Solution {
+    private final int[][] moves = {{0,1},{1,0},{0,-1},{-1,0}};
+
+    public class Box implements Comparable<Box>{
+        int x;
+        int y;
+        int val;
+
+        public Box(int x, int y, int val){
+            this.x = x;
+            this.y = y;
+            this.val = val;
+        }
+
+        @Override
+        public int compareTo(Box b2){
+            return this.val - b2.val;
+        }
+    }
+
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        PriorityQueue<Box> pq = new PriorityQueue<>();
+        boolean[][] vis = new boolean[n][m];
+        
+        pq.add(new Box(0, 0, grid[0][0]));
+        vis[0][0] = true;
+
+        int time = Integer.MIN_VALUE;
+
+        while (!pq.isEmpty()) {
+            Box curr = pq.poll();
+            int x = curr.x;
+            int y = curr.y;
+            time = Math.max(time, curr.val);
+
+            if (x == n - 1 && y == m - 1) {
+                return time;
+            }
+
+            for (int[] move : moves) {
+                int newRow = move[0] + x;
+                int newCol = move[1] + y;
+
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < m && !vis[newRow][newCol]) {
+                    vis[newRow][newCol] = true;
+                    pq.add(new Box(newRow, newCol, grid[newRow][newCol]));
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+
+
+
+// 239. Sliding Window Maximum
+
+class Solution {
+    public class Num implements Comparable<Num> {
+        int idx;
+        int val;
+
+        public Num(int idx, int val) {
+            this.idx = idx;
+            this.val = val;
+        }
+
+        @Override
+        public int compareTo(Num n2) {
+            return n2.val - this.val;
+        }
+
+    }
+
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        PriorityQueue<Num> pq = new PriorityQueue<>();
+
+        int ans[] = new int[nums.length - k + 1];
+
+        for (int i = 0; i < k; i++) {
+            pq.add(new Num(i, nums[i]));
+        }
+
+        ans[0] = pq.peek().val;
+
+        for (int i = k; i < nums.length; i++) {
+
+            while (pq.size() > 0 && pq.peek().idx <= i - k) {
+                pq.poll();
+            }
+            pq.add(new Num(i, nums[i]));
+            ans[i - k + 1] = pq.peek().val;
+
+        }
+
+        return ans;
+
+    }
+}
+
+
+// Kth smallest element in a sorted matrix
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int min = matrix[0][0];
+        int max = matrix[matrix.length - 1][matrix[0].length - 1];
+        int ans = -1;
+        
+        while (min <= max) {
+            int mid = min + (max - min) / 2;
+            int rank = countLessOrEqual(matrix, mid);
+            
+            if (rank >= k) {
+                ans = mid;
+                max = mid - 1; 
+            } else {
+                min = mid + 1; 
+            }
+        }
+        
+        return ans;
+    }
+
+    public int countLessOrEqual(int[][] matrix, int x) {
+        int count = 0;
+        int column = matrix[0].length - 1;
+        
+        for (int i = 0; i < matrix.length; i++) {
+            while (column >= 0 && matrix[i][column] > x) {
+                column--;
+            }
+            count += (column + 1);
+        }
+        
+        return count;
+    }
+}
