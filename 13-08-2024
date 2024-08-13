@@ -1,0 +1,87 @@
+
+// 20. Valid Parentheses
+
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> s1 = new Stack<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            if (ch == '(' || ch == '[' || ch == '{') {
+                s1.push(ch);
+            } else if (!s1.isEmpty() && 
+                       ((ch == ')' && s1.peek() == '(') || 
+                        (ch == ']' && s1.peek() == '[') || 
+                        (ch == '}' && s1.peek() == '{'))) {
+                s1.pop();
+            } else {
+                return false;
+            }
+        }
+
+        return s1.isEmpty();
+    }
+}
+
+// Print All Duplicate Characters in a String
+
+class Solution{
+    public void printDuplicate(String s){
+
+        char chars[]=str.toCharArray();
+        Arrays.sort(chars);
+
+        for(int i=0;i<chars.length;i++){
+            
+           int count=1;
+
+           while(i<chars.length-1 && chars[i]==chars[i+1]){
+            count++;
+            i++;
+           }
+
+           if(count>1){
+            System.out.printl(chars[i]+"->"count);
+           }
+
+        }
+
+    }
+}
+
+// 28. Find the Index of the First Occurrence in a String
+
+class Solution {
+    public int ans = -1;
+
+    public boolean solve(String haystack, String needle, int idx1, int idx2) {
+     
+        if (idx2 == needle.length()) {
+            ans = idx1 - needle.length();
+            return true;
+        }
+
+        
+        if (idx1 == haystack.length() || haystack.charAt(idx1) != needle.charAt(idx2)) {
+            return false;
+        }
+
+       
+        return solve(haystack, needle, idx1 + 1, idx2 + 1);
+    }
+
+    public int strStr(String haystack, String needle) {
+        if (needle.isEmpty()) {
+            return 0; 
+        }
+
+        for (int i = 0; i <= haystack.length() - needle.length(); i++) {
+            if (solve(haystack, needle, i, 0)) {
+                return ans; 
+            }
+        }
+
+        return -1; 
+    }
+}
