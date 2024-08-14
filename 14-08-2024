@@ -1,0 +1,223 @@
+// 546. Remove Boxes
+
+
+class Solution {
+    public int removeBoxes(int[] boxes) {
+        int n = boxes.length;
+        int[][][] dp = new int[n][n][n];
+        
+        return calculatePoints(boxes, 0, n - 1, 0, dp);
+    }
+    
+    private int calculatePoints(int[] boxes, int l, int r, int k, int[][][] dp) {
+        if (l > r) {
+            return 0;
+        }
+        
+        if (dp[l][r][k] != 0) {
+            return dp[l][r][k];
+        }
+        
+        int lOrig = l, kOrig = k;
+        
+        while (l < r && boxes[l] == boxes[l + 1]) {
+            l++;
+            k++;
+        }
+        
+        dp[lOrig][r][kOrig] = (k + 1) * (k + 1) + calculatePoints(boxes, l + 1, r, 0, dp);
+        
+        for (int i = l + 1; i <= r; i++) {
+            if (boxes[i] == boxes[l]) {
+                dp[lOrig][r][kOrig] = Math.max(dp[lOrig][r][kOrig], 
+                    calculatePoints(boxes, l + 1, i - 1, 0, dp) + calculatePoints(boxes, i, r, k + 1, dp));
+            }
+        }
+        
+        return dp[lOrig][r][kOrig];
+    }
+}
+
+// Alien Dictionary
+
+class Solution {
+    public String findOrder(String[] dict, int N, int K) {
+      
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < K; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+       
+        for (int i = 0; i < N - 1; i++) {
+            String curr = dict[i];
+            String next = dict[i + 1];
+            int len = Math.min(curr.length(), next.length());
+            for (int j = 0; j < len; j++) {
+                char c1 = curr.charAt(j);
+                char c2 = next.charAt(j);
+                if (c1 != c2) {
+                    adj.get(c1 - 'a').add(c2 - 'a');
+                    break;
+                }
+            }
+        }
+
+        
+        int[] inDegree = new int[K];
+        for (int i = 0; i < K; i++) {
+            for (int neighbor : adj.get(i)) {
+                inDegree[neighbor]++;
+            }
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < K; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        StringBuilder order = new StringBuilder();
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            order.append((char) (node + 'a'));
+
+            for (int neighbor : adj.get(node)) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+
+       
+        if (order.length() != K) {
+            return "";
+        }
+
+        return order.toString();
+    }
+}
+
+
+// 1192. Critical Connections in a Network
+
+
+class Solution {
+   
+    List<List<Integer>> ans;
+
+    public class Edge {
+        int src;
+        int dest;
+
+        public Edge(int src, int dest) {
+            this.src = src;
+            this.dest = dest;
+        }
+    }
+
+    public void createGraph(ArrayList<Edge> graph[], List<List<Integer>> connections) {
+        for (int i = 0; i < graph.length; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        for (List<Integer> connection : connections) {
+            int u = connection.get(0);
+            int v = connection.get(1);
+
+            graph[u].add(new Edge(u, v));
+            graph[v].add(new Edge(v, u));
+        }
+    }
+
+    public void solve(ArrayList<Edge> graph[], int dt[], int low[], boolean vis[], int time, int par, int curr) {
+        ++time;
+        dt[curr] = time;
+        low[curr] = time;
+        vis[curr] = true;
+
+        for (Edge e : graph[curr]) {
+            if (e.dest == par) {
+                continue;
+            }
+
+            if (!vis[e.dest]) {
+                solve(graph, dt, low, vis, time, curr, e.dest);
+                low[curr] = Math.min(low[curr], low[e.dest]);
+                if (dt[curr] < low[e.dest]) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(curr);
+                    list.add(e.dest);
+                    ans.add(list);
+                }
+            } else {
+                low[curr] = Math.min(low[curr], dt[e.dest]);
+            }
+        }
+    }
+
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        ArrayList<Edge> graph[] = new ArrayList[n];
+        createGraph(graph, connections);
+
+        int dt[] = new int[n];
+        int low[] = new int[n];
+        boolean vis[] = new boolean[n];
+
+        ans = new ArrayList<>();
+
+        solve(graph, dt, low, vis, 0, -1, 0);
+
+        return ans;
+    }
+}
+
+// 127. Word Ladder
+
+class Solution {
+    public class Pair {
+        String str;
+        int level;
+
+        public Pair(String str, int level) {
+            this.str = str;
+            this.level = level;
+        }
+    }
+    
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> set = new HashSet<>(wordList);
+
+        if (!set.contains(endWord)) {
+            return 0;
+        }
+        
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(beginWord, 1));
+
+        while (!q.isEmpty()) {
+            Pair curr = q.poll();
+            String word = curr.str;
+
+            if (word.equals(endWord)) {
+                return curr.level;
+            }
+
+            for (int i = 0; i < word.length(); i++) {
+                char[] wordArray = word.toCharArray();
+                for (char ch = 'a'; ch <= 'z'; ch++) {
+                    wordArray[i] = ch;
+                    String newWord = new String(wordArray);
+                    if (set.contains(newWord)) {
+                        q.add(new Pair(newWord, curr.level + 1));
+                        set.remove(newWord);
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+}
